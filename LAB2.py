@@ -27,30 +27,27 @@ class Instructor:
         >>> t1.get_courses()
         ['STAT100']
     '''
-
     def __init__(self, name):
-        #--- YOUR CODE STARTS HERE
-        pass
+       self.name = name
+       self.courses = []
 
     def get_name(self):
-        #--- YOUR CODE STARTS HERE
-        pass
+        return self.name
 
     def set_name(self, new_name):
-        #--- YOUR CODE STARTS HERE
-        pass
+        if isinstance(new_name, str) and len(new_name) > 0:
+            self.name = new_name
 
     def get_courses(self):
-        #--- YOUR CODE STARTS HERE
-        pass
+        return self.courses
 
     def remove_course(self, course):
-        #--- YOUR CODE STARTS HERE
-        pass
+        if course in self.courses:
+            self.courses.remove(course)
         
     def add_course(self,course):
-        #--- YOUR CODE STARTS HERE
-        pass
+        if course not in self.courses:
+            self.courses.append(course)
 
 
 # -------- SECTION 2      
@@ -104,21 +101,23 @@ class Pantry:
         self.items = {}
     
     def __repr__(self):
-        #--- YOUR CODE STARTS HERE
-        pass
+        return f"I am a Pantry object, my current stock is {self.items}"
 
     def stock_pantry(self, item, qty):
-        #--- YOUR CODE STARTS HERE
-        pass
+        current_qty = self.items.get(item, 0.0)
+        self.items[item] = float(current_qty + qty)
+        return f"Pantry Stock for {item}: {self.items[item]}"
 
 
     def get_item(self, item, qty):
-        #--- YOUR CODE STARTS HERE
-        pass
+        if item not in self.items:
+            return f"You don't have {item}"
     
     def transfer(self, other_pantry, item):
-        #--- YOUR CODE STARTS HERE
-        pass
+        if item in other_pantry.items and other_pantry.items[item] > 0:
+            qty_to_transfer = other_pantry.items[item]
+            self.stock_pantry(item, qty_to_transfer)
+            other_pantry.items[item] = 0.0
 
 
 # -------- SECTION 3
@@ -144,24 +143,31 @@ class Player:
         Best game: 2 attempts
     """
     def __init__(self, name):
-        #--- YOUR CODE STARTS HERE
-        pass
+        self.player_name = name
+        self.wins = 0
+        self.losses = 0
+        self.best_game = float("inf")
 
     def update_win(self, att):
-        #--- YOUR CODE STARTS HERE
-        pass
+        self.wins += 1
+        if att < self.best_game:
+            self.best_game = att
     
     def update_loss(self):
-        #--- YOUR CODE STARTS HERE
-        pass
+        self.losses += 1
     
 
     def __str__(self):
-        #--- YOUR CODE STARTS HERE
-        pass
+        total_games = self.wins + self.losses
+        if total_games == 0:
+            return f"No game records for {self.player_name}"
+
+        best_str = (f"{self.best_game} attempts" if self.best_game != float("inf") else "None")
+        return (f"*Game records for {self.player_name}*\n"f"Total games: {total_games}\n"f"Games won: {self.wins}\n"f"Games lost: {self.losses}\n"f"Best game: {best_str}")
 
 
     __repr__=__str__
+
 
 class Wordle:
     """
@@ -219,22 +225,47 @@ class Wordle:
         Games lost: 1
         Best game: None
     """
-
+    max_attempts = 6 
     def __init__(self, player, word):
-        #--- YOUR CODE STARTS HERE
-        pass
+        self.user = player
+        self.word = word.lower()
+        self.attempts = 0
+        self.is_over = False
     
 
     def process_guess(self, guess):
-        #--- YOUR CODE STARTS HERE
-        pass
-
+        if len(guess) != 5:
+            return "Guess must be 5 letters long"
+        if not guess.isalpha():
+            return "Guess must be all letters"
+        feedback = []
+        guess_lower = guess.lower()
+        for i in range(5):
+            char = guess_lower[i]
+            if char == self.word[i]:
+                feedback.append(char.upper())
+            elif char in self.word:
+                feedback.append(char.lower())
+            else:
+                feedback.append("_")
+        return "".join(feedback)
 
     def play(self, guess):
-        #--- YOUR CODE STARTS HERE
-        pass
-       
-
+        if self.is_over:
+            return "Game over"
+        feedback = self.process_guess(guess)
+        if feedback in ["Guess must be 5 letters long","Guess must be all letters",]:
+            return feedback
+        self.attempts += 1
+        if guess.lower() == self.word:
+            self.is_over = True
+            self.user.update_win(self.attempts)
+            return "You won the game"
+        if self.attempts >= Wordle.max_attempts:
+            self.is_over = True
+            self.user.update_loss()
+            return f"The word was {self.word}"
+        return feedback
 
 
 # -------- SECTION 4
@@ -298,18 +329,25 @@ class Line:
         False
     '''
     def __init__(self, point1, point2):
-        #--- YOUR CODE STARTS HERE
-        pass
+        self.p1 = point1
+        self.p2 = point2
 
     #--- YOUR CODE STARTS HERE
     def getDistance(self):
-        pass
+        dx = self.p2.x - self.p1.x
+        dy = self.p2.y - self.p1.y
+        dist = math.sqrt(dx**2 + dy**2)
+        return round(dist, 3)
        
     
     #--- YOUR CODE STARTS HERE
     def getSlope(self):
-        pass
-
+        dx = self.p2.x - self.p1.x
+        dy = self.p2.y - self.p1.y
+        if dx == 0:
+            return math.inf
+        slope = dy / dx
+        return round(slope, 3)
 
     #--- YOUR CODE CONTINUES HERE
 
@@ -322,7 +360,7 @@ def run_tests():
     doctest.testmod(verbose=True)
     
     # Run tests per function - Uncomment the next line to run doctest by function. Replace Pantry with the name of the class you want to test
-    #doctest.run_docstring_examples(Pantry, globals(), name='LAB2',verbose=True)
+    doctest.run_docstring_examples(Pantry, globals(), name='LAB2',verbose=True)
 
 if __name__ == "__main__":
     run_tests()
