@@ -231,20 +231,19 @@ class Wordle:
         Games lost: 1
         Best game: None
     """
-    max_attempts = 6 
+    max_attempts = 6
+
     def __init__(self, player, word):
         self.user = player
         self.word = word.lower()
         self.attempts = 0
         self.is_over = False
-    
+
     def process_guess(self, guess):
         if len(guess) != 5:
             return "Guess must be 5 letters long"
         if not guess.isalpha():
             return "Guess must be all letters"
-    
-
         feedback = []
         guess_lower = guess.lower()
         for i in range(5):
@@ -260,19 +259,15 @@ class Wordle:
     def play(self, guess):
         if self.is_over:
             return "Game over"
-
         feedback = self.process_guess(guess)
-        if feedback in ["Guess must be 5 letters long", "Guess must be all letters"]:
+        if feedback in ["Guess must be 5 letters long","Guess must be all letters"]:
             return feedback
-
         self.attempts += 1
-
         if guess.lower() == self.word:
             self.is_over = True
             self.user.update_win(self.attempts)
             return "You won the game"
-
-        if self.attempts >= self.max_attempts:
+        if self.attempts >= Wordle.max_attempts:
             self.is_over = True
             self.user.update_loss()
             return f"The word was {self.word}"
@@ -369,7 +364,6 @@ class Line:
         m = self.getSlope
         if m == math.inf:
             return math.inf
-       
         b = self.p1.y - (m * self.p1.x)
         return round(b, 3)
 
@@ -377,12 +371,9 @@ class Line:
         m = self.getSlope
         if m == math.inf:
             return "Undefined"
-
         b = self.getIntercept
         if m == 0:
             return f"y={b}"
-
-
         if b >= 0:
             return f"y={m}x+{b}"
         else:
@@ -401,11 +392,9 @@ class Line:
     def __contains__(self, point: float) -> bool:
         if not isinstance(point, Point2D):
             return False
-
         m = self.getSlope
         if m == math.inf:
             return False
-
         b = self.getIntercept
         expected_y = m * point.x + b
         return math.isclose(point.y, expected_y, abs_tol=1e-5)
@@ -414,11 +403,7 @@ class Line:
 
 def run_tests():
     import doctest
-
-    # Run tests in all docstrings
     doctest.testmod(verbose=True)
-    
-    # Run tests per function - Uncomment the next line to run doctest by function. Replace Pantry with the name of the class you want to test
     doctest.run_docstring_examples(Pantry, globals(), name='LAB2',verbose=True)
 
 if __name__ == "__main__":
