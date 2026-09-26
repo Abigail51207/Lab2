@@ -112,7 +112,13 @@ class Pantry:
     def get_item(self, item, qty):
         if item not in self.items:
             return f"You don't have {item}"
-    
+        if self.items[item] > qty:
+            self.items[item] -= float(qty)
+            return f"You have {self.items[item]} of {item} left"
+        else:
+            self.items[item] = 0.0
+            return f"Add {item} to your shopping list!"
+   
     def transfer(self, other_pantry, item):
         if item in other_pantry.items and other_pantry.items[item] > 0:
             qty_to_transfer = other_pantry.items[item]
@@ -232,7 +238,7 @@ class Wordle:
         self.attempts = 0
         self.is_over = False
     
-
+    """
     def process_guess(self, guess):
         if len(guess) != 5:
             return "Guess must be 5 letters long"
@@ -265,7 +271,54 @@ class Wordle:
             self.is_over = True
             self.user.update_loss()
             return f"The word was {self.word}"
+        return feedback"""
+
+    def process_guess(self, guess):
+        if len(guess) != 5:
+            return "Guess must be 5 letters long"
+        if not guess.isalpha():
+            return "Guess must be all letters"
+    
+
+        feedback = []
+        guess_lower = guess.lower()
+        for i in range(5):
+            char = guess_lower[i]
+            if char == self.word[i]:
+                feedback.append(char.upper())
+            elif char in self.word:
+                feedback.append(char.lower())
+            else:
+                feedback.append("_")
+        return "".join(feedback)
+
+
+    def play(self, guess):
+        if self.is_over:
+            return "Game over"
+
+        # Validate first using process_guess feedback
+        feedback = self.process_guess(guess)
+        if feedback in [
+        "Guess must be 5 letters long",
+        "Guess must be all letters",]:
+            return feedback
+
+        # Only valid 5-letter alphabetic attempts count toward max attempts
+        self.attempts += 1
+
+        if guess.lower() == self.word:
+            self.is_over = True
+            self.user.update_win(self.attempts)
+            return "You won the game"
+
+        if self.attempts >= Wordle.max_attempts:
+            self.is_over = True
+            self.user.update_loss()
+            return f"The word was {self.word}"
+
         return feedback
+
 
 
 # -------- SECTION 4
@@ -333,6 +386,7 @@ class Line:
         self.p2 = point2
 
     #--- YOUR CODE STARTS HERE
+    @property
     def getDistance(self):
         dx = self.p2.x - self.p1.x
         dy = self.p2.y - self.p1.y
@@ -341,6 +395,7 @@ class Line:
        
     
     #--- YOUR CODE STARTS HERE
+    @property
     def getSlope(self):
         dx = self.p2.x - self.p1.x
         dy = self.p2.y - self.p1.y
