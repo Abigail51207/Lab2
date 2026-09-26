@@ -292,19 +292,14 @@ class Wordle:
                 feedback.append("_")
         return "".join(feedback)
 
-
     def play(self, guess):
         if self.is_over:
             return "Game over"
 
-        # Validate first using process_guess feedback
         feedback = self.process_guess(guess)
-        if feedback in [
-        "Guess must be 5 letters long",
-        "Guess must be all letters",]:
+        if feedback in ["Guess must be 5 letters long", "Guess must be all letters"]:
             return feedback
 
-        # Only valid 5-letter alphabetic attempts count toward max attempts
         self.attempts += 1
 
         if guess.lower() == self.word:
@@ -316,7 +311,6 @@ class Wordle:
             self.is_over = True
             self.user.update_loss()
             return f"The word was {self.word}"
-
         return feedback
 
 
@@ -405,6 +399,51 @@ class Line:
         return round(slope, 3)
 
     #--- YOUR CODE CONTINUES HERE
+    @property
+    def getIntercept(self) -> float:
+        m = self.getSlope
+        if m == math.inf:
+            return math.inf
+       
+        b = self.p1.y - (m * self.p1.x)
+        return round(b, 3)
+
+    def __str__(self) -> str:
+        m = self.getSlope
+        if m == math.inf:
+            return "Undefined"
+
+        b = self.getIntercept
+        if m == 0:
+            return f"y={b}"
+
+
+        if b >= 0:
+            return f"y={m}x+{b}"
+        else:
+            return f"y={m}x-{abs(b)}"
+
+    def __repr__(self) -> str:
+        return self.__str__()
+
+    def __mul__(self, other: float):
+        if not isinstance(other, int):
+            return None
+        new_p1 = Point2D(self.p1.x * other, self.p1.y * other)
+        new_p2 = Point2D(self.p2.x * other, self.p2.y * other)
+        return Line(new_p1, new_p2)
+
+    def __contains__(self, point: float) -> bool:
+        if not isinstance(point, Point2D):
+            return False
+
+        m = self.getSlope
+        if m == math.inf:
+            return False
+
+        b = self.getIntercept
+        expected_y = m * point.x + b
+        return math.isclose(point.y, expected_y, abs_tol=1e-5)
 
 
 
