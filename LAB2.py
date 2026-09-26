@@ -238,41 +238,6 @@ class Wordle:
         self.attempts = 0
         self.is_over = False
     
-    """
-    def process_guess(self, guess):
-        if len(guess) != 5:
-            return "Guess must be 5 letters long"
-        if not guess.isalpha():
-            return "Guess must be all letters"
-        feedback = []
-        guess_lower = guess.lower()
-        for i in range(5):
-            char = guess_lower[i]
-            if char == self.word[i]:
-                feedback.append(char.upper())
-            elif char in self.word:
-                feedback.append(char.lower())
-            else:
-                feedback.append("_")
-        return "".join(feedback)
-
-    def play(self, guess):
-        if self.is_over:
-            return "Game over"
-        feedback = self.process_guess(guess)
-        if feedback in ["Guess must be 5 letters long","Guess must be all letters",]:
-            return feedback
-        self.attempts += 1
-        if guess.lower() == self.word:
-            self.is_over = True
-            self.user.update_win(self.attempts)
-            return "You won the game"
-        if self.attempts >= Wordle.max_attempts:
-            self.is_over = True
-            self.user.update_loss()
-            return f"The word was {self.word}"
-        return feedback"""
-
     def process_guess(self, guess):
         if len(guess) != 5:
             return "Guess must be 5 letters long"
@@ -307,7 +272,7 @@ class Wordle:
             self.user.update_win(self.attempts)
             return "You won the game"
 
-        if self.attempts >= Wordle.max_attempts:
+        if self.attempts >= self.max_attempts:
             self.is_over = True
             self.user.update_loss()
             return f"The word was {self.word}"
